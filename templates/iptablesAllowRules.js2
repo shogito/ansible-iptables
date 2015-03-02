@@ -1,8 +1,8 @@
 {# 全ホストからの入力許可 #}
-{% if allowIcmp %}
+{% if ANSIBLE_IPTABLES_ALLOW_ICMP %}
 iptables -A INPUT -p icmp -j ACCEPT
 {% endif %}
 
-{% for option in allow %}
+{% for option in ANSIBLE_IPTABLES_ALLOW %}
 iptables -A INPUT -p {{ option.protocol }} -m multiport --dports {{ option.port }} -j ACCEPT
 {% endfor %}

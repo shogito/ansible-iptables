@@ -4,6 +4,11 @@
 iptablesが動作していること
 
 ### Role Variables
+iptablesでのパケットフィルタの有効化(True/False)
+```
+ANSIBLE_IPTABLES_FILTER: True
+```
+
 全ホストへのICMPのECHOを許可(True/False)
 ```
 ANSIBLE_IPTABLES_ALLOW_ICMP: True

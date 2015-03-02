@@ -11,7 +11,7 @@ initialize()
 }
 initialize
 
-{% if filter %}
+{% if ANSIBLE_IPTABLES_FILTER %}
 # 基本ポリシー
 iptables -P INPUT   DROP 
 iptables -P OUTPUT  ACCEPT
@@ -19,7 +19,7 @@ iptables -P FORWARD DROP
 
 # Docker Network
 {# Docker用forward #}
-{% if enableDockerNetwork %}
+{% if ANSIBLE_IPTABLES_DOCKER_NETWORK %}
 iptables -A FORWARD -s 172.17.0.0/16 -j ACCEPT
 iptables -A FORWARD -d 172.17.0.0/16 -j ACCEPT
 {% endif %}
@@ -30,13 +30,13 @@ iptables -A INPUT -i lo -j ACCEPT
 
 # 信頼可能ホストを全てACCEPT
 {# whitelist #}
-{% for allowhost in allowhosts %}
+{% for allowhost in ANSIBLE_IPTABLES_ALLOW_HOSTS %}
 iptables -A INPUT -s {{ allowhost.host }} -j ACCEPT
 {% endfor %}
 
 # 拒否対象ホストを全てDROP
 {# blacklist #}
-{% for denyhost in denyhosts %}
+{% for denyhost in ANSIBLE_IPTABLES_DENY_HOSTS %}
 iptables -A INPUT -s {{ denyhost.host }} -m limit --limit 1/s -j LOG --log-prefix "deny_host: "
 iptables -A INPUT -s {{ denyhost.host }} -j DROP
 {% endfor %}
@@ -52,7 +52,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 # 接続許可
 {# 接続許可をinclude #}
-{% include 'iptablesAllowRule.js2' %}
+{% include 'iptablesAllowRules.js2' %}
 
 # 例外は全てロギングしてDROP
 {# 全てロギングして破棄 #}
