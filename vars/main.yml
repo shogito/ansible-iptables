@@ -1,0 +1,11 @@
+filter: True
+# services: { http: 80, https: 443, ssh: 22, ident: 113 }
+allowIcmp: True
+selfDefence: True
+allow:
+  - { port: 80, protocol: tcp }
+  - { port: 443, protocol: tcp }
+  - { port: 22, protocol: tcp }
+enableDockerNetwork: True
+allowhosts: []
+denyhosts: []

@@ -1,0 +1,8 @@
+{# 全ホストからの入力許可 #}
+{% if allowIcmp %}
+iptables -A INPUT -p icmp -j ACCEPT
+{% endif %}
+
+{% for option in allow %}
+iptables -A INPUT -p {{ option.protocol }} -m multiport --dports {{ option.port }} -j ACCEPT
+{% endfor %}

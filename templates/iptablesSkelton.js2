@@ -1,0 +1,69 @@
+#!/bin/sh
+# iptables初期化
+initialize() 
+{
+    iptables -F 
+    iptables -X
+    iptables -Z 
+    iptables -P INPUT   ACCEPT
+    iptables -P OUTPUT  ACCEPT
+    iptables -P FORWARD ACCEPT
+}
+initialize
+
+{% if filter %}
+# 基本ポリシー
+iptables -P INPUT   DROP 
+iptables -P OUTPUT  ACCEPT
+iptables -P FORWARD DROP
+
+# Docker Network
+{# Docker用forward #}
+{% if enableDockerNetwork %}
+iptables -A FORWARD -s 172.17.0.0/16 -j ACCEPT
+iptables -A FORWARD -d 172.17.0.0/16 -j ACCEPT
+{% endif %}
+
+# loopbackを全てACCEPT
+{# loopbackを許可 #}
+iptables -A INPUT -i lo -j ACCEPT
+
+# 信頼可能ホストを全てACCEPT
+{# whitelist #}
+{% for allowhost in allowhosts %}
+iptables -A INPUT -s {{ allowhost.host }} -j ACCEPT
+{% endfor %}
+
+# 拒否対象ホストを全てDROP
+{# blacklist #}
+{% for denyhost in denyhosts %}
+iptables -A INPUT -s {{ denyhost.host }} -m limit --limit 1/s -j LOG --log-prefix "deny_host: "
+iptables -A INPUT -s {{ denyhost.host }} -j DROP
+{% endfor %}
+
+# セッション確立後パケットの疎通をACCEPT
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# 攻撃対策
+{# 攻撃対策をinclude #}
+{% if selfDefence %}
+{% include 'iptablesSelfDefenceRules.js2' %}
+{% endif %}
+
+# 接続許可
+{# 接続許可をinclude #}
+{% include 'iptablesAllowRule.js2' %}
+
+# 例外は全てロギングしてDROP
+{# 全てロギングして破棄 #}
+iptables -A INPUT -j LOG --log-prefix "drop: "
+iptables -A INPUT -j DROP
+
+{% else %}
+# 基本ポリシー
+iptables -P INPUT   ACCEPT
+iptables -P OUTPUT  ACCEPT
+iptables -P FORWARD ACCEPT
+{% endif %}
+
+
