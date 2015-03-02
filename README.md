@@ -4,7 +4,7 @@
 iptablesが動作していること
 
 ### Role Variables
-ICPMのECHOを許可(True/False)
+ICMPのECHOを許可(True/False)
 ```
 allowIcmp: True
 ```
