@@ -4,15 +4,14 @@
   tags:
     - iptables
 
-- name: iptables$BE,MQ(B  
+- name: iptables適用  
   command: /usr/local/bin/iptables.sh
   sudo: yes
   tags:
     - iptables
 
-- name: $B:F5/F0;~$K$bE,MQ$9$k(B
+- name: 再起動時にも適用する
   lineinfile: line=/usr/local/bin/iptables insertafter=EOF dest=/etc/rc.local
   sudo: yes
   tags:
     - iptables
-

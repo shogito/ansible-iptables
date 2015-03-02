@@ -1,8 +1,13 @@
 - hosts: all
   vars:
-    ANSIBLE_RBENV_RBENV_USER: root
-    ANSIBLE_RBENV_RBENV_USER_HOME: /root
-    ANSIBLE_RBENV_RUBY_VERSION: 2.2.0
+    ANSIBLE_IPTABLES_ALLOW_ICMP: True
+    ANSIBLE_IPTABLES_SELF_DEFENCE: True
+    ANSIBLE_IPTABLES_ALLOW:
+      - { port: 80, protocol: tcp }
+      - { port: 443, protocol: tcp }
+      - { port: 22, protocol: tcp }
+    ANSIBLE_IPTABLES_DOCKER_NETWORK: True
+    ANSIBLE_IPTABLES_ALLOW_HOSTS: []
+    ANSIBLE_IPTABLES_DENY_HOSTS: []
   roles:
-    - ansible-rbenv
-
+    - { role: ansible-iptables }
