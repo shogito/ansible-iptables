@@ -12,6 +12,7 @@ allowIcmp: True
 DDoS等の攻撃対策(True/False)
 ```
 selfDefence: True
+```
 
 全ホストからの通信許可
 ```
